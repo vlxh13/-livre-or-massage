@@ -1,0 +1,84 @@
+// ===========================================
+// FORMULAIRE - Soumission des témoignages
+// ===========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupForm();
+    setDefaultDate();
+});
+
+function setDefaultDate() {
+    const dateInput = document.getElementById('date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+    dateInput.max = today; // Pas de date future
+}
+
+function setupForm() {
+    const form = document.getElementById('review-form');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitBtn = form.querySelector('.submit-btn');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoading = submitBtn.querySelector('.btn-loading');
+
+        // État loading
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'inline';
+
+        // Collecter les données
+        const formData = {
+            prenom: form.prenom.value.trim(),
+            massage: form.massage.value,
+            date: form.date.value,
+            note: parseInt(form.note.value),
+            commentaire: form.commentaire.value.trim(),
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            if (!CONFIG.API_URL) {
+                // Mode démo - simuler un envoi
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                showSuccess();
+                return;
+            }
+
+            const response = await fetch(CONFIG.API_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Nécessaire pour Google Apps Script
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            // Avec no-cors, on ne peut pas lire la réponse
+            // On considère que c'est OK si pas d'erreur
+            showSuccess();
+
+        } catch (error) {
+            console.error('Erreur envoi:', error);
+            alert('Une erreur est survenue. Veuillez réessayer.');
+
+            // Reset bouton
+            submitBtn.disabled = false;
+            btnText.style.display = 'inline';
+            btnLoading.style.display = 'none';
+        }
+    });
+}
+
+function showSuccess() {
+    const form = document.getElementById('review-form');
+    const successMessage = document.getElementById('success-message');
+
+    form.style.display = 'none';
+    successMessage.style.display = 'block';
+
+    // Scroll vers le haut
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}

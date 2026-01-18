@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livre d'Or</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Raleway:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Livre d'Or</h1>
+            <p class="subtitle">Témoignages de bien-être</p>
+        </header>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">Tous</button>
+            <!-- Les filtres par type de massage seront ajoutés dynamiquement -->
+        </div>
+
+        <main id="reviews-container">
+            <div class="loading">
+                <div class="loader"></div>
+                <p>Chargement des témoignages...</p>
+            </div>
+        </main>
+
+        <footer>
+            <a href="avis.html" class="cta-button">Laisser un témoignage</a>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
