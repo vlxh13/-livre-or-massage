@@ -455,6 +455,151 @@ footer {
    RESPONSIVE
    =========================================== */
 
+/* ===========================================
+   PRINT BUTTON
+   =========================================== */
+
+.print-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent-dark);
+    border-radius: 8px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 12px;
+}
+
+.print-btn:hover {
+    background: var(--accent);
+    color: var(--white);
+}
+
+.header-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* ===========================================
+   PRINT STYLES
+   =========================================== */
+
+@media print {
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    body {
+        background: white;
+        font-size: 11pt;
+        line-height: 1.5;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 0;
+        min-height: auto;
+    }
+
+    header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--accent);
+    }
+
+    h1 {
+        font-size: 28pt;
+        margin-bottom: 4px;
+    }
+
+    .subtitle {
+        font-size: 11pt;
+    }
+
+    /* Masquer les éléments interactifs */
+    .filters,
+    .header-actions,
+    footer,
+    .cta-button,
+    .print-btn,
+    .back-link {
+        display: none !important;
+    }
+
+    /* Cards print style */
+    #reviews-container {
+        gap: 16px;
+    }
+
+    .review-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: none;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .review-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .review-header {
+        margin-bottom: 12px;
+    }
+
+    .review-name {
+        font-size: 14pt;
+    }
+
+    .review-massage {
+        font-size: 10pt;
+    }
+
+    .review-date {
+        font-size: 9pt;
+    }
+
+    .review-stars {
+        font-size: 12pt;
+        color: var(--gold) !important;
+    }
+
+    .review-text {
+        font-size: 10pt;
+        line-height: 1.6;
+    }
+
+    .review-text::before {
+        font-size: 18pt;
+    }
+
+    /* Page margins */
+    @page {
+        margin: 1.5cm;
+        size: A4;
+    }
+
+    /* Header on each page */
+    header {
+        position: running(header);
+    }
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
 @media (max-width: 600px) {
     .container {
         padding: 24px 16px;
