@@ -4,7 +4,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     loadReviews();
-    setupFilters();
 });
 
 // Données locales pour démo (utilisées si pas d'API configurée)
@@ -41,6 +40,7 @@ async function loadReviews() {
         // Mode démo
         allReviews = DEMO_REVIEWS;
         displayReviews(allReviews);
+        setupFilters(CONFIG.MASSAGE_TYPES);
         return;
     }
 
@@ -49,6 +49,12 @@ async function loadReviews() {
         const data = await response.json();
         allReviews = data.reviews || [];
         displayReviews(allReviews);
+
+        // Charger les filtres avec les types depuis l'API ou fallback
+        const types = data.massageTypes && data.massageTypes.length > 0
+            ? data.massageTypes
+            : CONFIG.MASSAGE_TYPES;
+        setupFilters(types);
     } catch (error) {
         console.error('Erreur chargement:', error);
         container.innerHTML = `
@@ -57,6 +63,7 @@ async function loadReviews() {
                 <p style="font-size: 0.85rem;">Vérifiez la configuration de l'API.</p>
             </div>
         `;
+        setupFilters(CONFIG.MASSAGE_TYPES);
     }
 }
 
@@ -119,11 +126,11 @@ function escapeHtml(text) {
 // FILTRES
 // ===========================================
 
-function setupFilters() {
+function setupFilters(massageTypes) {
     const filtersContainer = document.querySelector('.filters');
 
     // Ajouter les filtres par type de massage
-    CONFIG.MASSAGE_TYPES.forEach(type => {
+    massageTypes.forEach(type => {
         const btn = document.createElement('button');
         btn.className = 'filter-btn';
         btn.dataset.filter = type;

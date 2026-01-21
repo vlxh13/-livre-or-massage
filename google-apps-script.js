@@ -18,22 +18,26 @@
 // 5. Copier l'URL du déploiement et la mettre dans config.js
 // ===========================================
 
-// Nom de la feuille (onglet) dans votre Google Sheet
+// Noms des feuilles (onglets)
 const SHEET_NAME = 'Avis';
+const CONFIG_SHEET_NAME = 'Config';
 
-// GET - Récupérer tous les avis
-// Paramètre optionnel: ?admin=true pour inclure les notes praticienne
+// GET - Récupérer les avis ET les types de massage
+// Paramètres: ?admin=true pour inclure les notes praticienne
 function doGet(e) {
   try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME);
     const isAdmin = e && e.parameter && e.parameter.admin === 'true';
 
+    // Récupérer les types de massage depuis l'onglet Config
+    const massageTypes = getMassageTypes(ss);
+
     if (!sheet) {
-      return createJsonResponse({ error: 'Feuille non trouvée', reviews: [] });
+      return createJsonResponse({ error: 'Feuille non trouvée', reviews: [], massageTypes: massageTypes });
     }
 
     const data = sheet.getDataRange().getValues();
-    const headers = data[0];
     const reviews = [];
 
     // Parcourir les lignes (en sautant l'en-tête)
@@ -59,11 +63,34 @@ function doGet(e) {
       }
     }
 
-    return createJsonResponse({ reviews: reviews });
+    return createJsonResponse({ reviews: reviews, massageTypes: massageTypes });
 
   } catch (error) {
-    return createJsonResponse({ error: error.message, reviews: [] });
+    return createJsonResponse({ error: error.message, reviews: [], massageTypes: [] });
   }
+}
+
+// Lire les types de massage depuis l'onglet Config
+function getMassageTypes(ss) {
+  const configSheet = ss.getSheetByName(CONFIG_SHEET_NAME);
+
+  if (!configSheet) {
+    // Fallback si pas d'onglet Config
+    return ['Relaxant', 'Sportif', 'Californien', 'Dos & Nuque', 'Jambes légères', 'Visage', 'Autre'];
+  }
+
+  const data = configSheet.getDataRange().getValues();
+  const types = [];
+
+  // Lire colonne A (en sautant l'en-tête si présent)
+  for (let i = 0; i < data.length; i++) {
+    const value = data[i][0];
+    if (value && typeof value === 'string' && value.trim() !== '' && value !== 'Types de massage') {
+      types.push(value.trim());
+    }
+  }
+
+  return types.length > 0 ? types : ['Relaxant', 'Sportif', 'Californien', 'Dos & Nuque', 'Jambes légères', 'Visage', 'Autre'];
 }
 
 // POST - Ajouter un nouvel avis OU mettre à jour les notes praticienne

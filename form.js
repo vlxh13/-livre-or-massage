@@ -3,9 +3,49 @@
 // ===========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadMassageTypes();
     setupForm();
     setDefaultDate();
 });
+
+// Charger les types de massage depuis l'API
+async function loadMassageTypes() {
+    const select = document.getElementById('massage');
+
+    if (!CONFIG.API_URL) {
+        // Mode démo - utiliser les types par défaut
+        populateMassageSelect(CONFIG.MASSAGE_TYPES);
+        return;
+    }
+
+    try {
+        const response = await fetch(CONFIG.API_URL);
+        const data = await response.json();
+
+        if (data.massageTypes && data.massageTypes.length > 0) {
+            populateMassageSelect(data.massageTypes);
+        } else {
+            // Fallback sur config locale
+            populateMassageSelect(CONFIG.MASSAGE_TYPES);
+        }
+    } catch (error) {
+        console.error('Erreur chargement types:', error);
+        populateMassageSelect(CONFIG.MASSAGE_TYPES);
+    }
+}
+
+// Remplir le select avec les types
+function populateMassageSelect(types) {
+    const select = document.getElementById('massage');
+    select.innerHTML = '<option value="">Choisir...</option>';
+
+    types.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        select.appendChild(option);
+    });
+}
 
 function setDefaultDate() {
     const dateInput = document.getElementById('date');
