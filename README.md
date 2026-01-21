@@ -101,12 +101,50 @@ Dans `style.css`, modifier les variables CSS :
 
 ```
 livre-or-massage/
-├── index.html           # Page livre d'or
-├── avis.html           # Formulaire
-├── style.css           # Styles
-├── config.js           # Configuration
-├── script.js           # Logique affichage
-├── form.js             # Logique formulaire
+├── index.html           # Page livre d'or (public)
+├── avis.html            # Formulaire client
+├── notes.html           # Page praticienne (privée)
+├── style.css            # Styles
+├── config.js            # Configuration
+├── script.js            # Logique affichage
+├── form.js              # Logique formulaire
+├── notes.js             # Logique page praticienne
 ├── google-apps-script.js  # Code backend (à copier dans Google)
 └── README.md
 ```
+
+---
+
+## Espace Praticienne (notes.html)
+
+Une page cachée permet à la praticienne de noter ses observations après chaque massage.
+
+### Accès
+
+L'URL `notes.html` n'est pas liée publiquement. Seule la praticienne connaît le lien :
+- `https://tonsite.github.io/livre-or-massage/notes.html`
+
+### Fonctionnalités
+
+- **Liste des massages** avec le retour client
+- **Zone de notes** pour chaque massage (non visible publiquement)
+- **Filtres** : Tous / Sans notes / Avec notes
+- **Statistiques** : nombre de massages, avec/sans notes
+
+### Utilité pour la formation
+
+La praticienne peut noter :
+- Ce qui a bien marché
+- Points à améliorer
+- Tensions détectées pendant le massage
+- Feedback verbal du client
+- Auto-évaluation
+
+### Mise à jour du Google Sheet
+
+Ajouter la colonne G dans le Google Sheet :
+```
+A: Timestamp | B: Prénom | C: Massage | D: Date | E: Note | F: Commentaire | G: Notes Praticienne
+```
+
+**Important :** Après modification du code Google Apps Script, créer un **nouveau déploiement** pour que les changements prennent effet.
