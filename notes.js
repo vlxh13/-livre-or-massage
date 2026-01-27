@@ -135,8 +135,10 @@ async function saveNotes(reviewId) {
     saveBtn.textContent = 'Enregistrement...';
 
     try {
-        const response = await fetch(CONFIG.API_URL, {
+        // Utiliser no-cors pour contourner CORS de Google Apps Script
+        await fetch(CONFIG.API_URL, {
             method: 'POST',
+            mode: 'no-cors',
             body: JSON.stringify({
                 action: 'updateNotes',
                 id: reviewId,
@@ -144,41 +146,35 @@ async function saveNotes(reviewId) {
             })
         });
 
-        const data = await response.json();
-
-        if (data.success) {
-            // Mettre à jour les données locales
-            const review = allReviews.find(r => r.id === reviewId);
-            if (review) {
-                review.notesPraticienne = notes;
-            }
-
-            // Feedback visuel
-            saveBtn.textContent = 'Enregistré !';
-            saveBtn.classList.add('saved');
-            textarea.dataset.original = notes;
-
-            // Mettre à jour les stats
-            updateStats();
-
-            // Mettre à jour le style de la carte
-            const card = document.querySelector(`.review-card-admin[data-id="${reviewId}"]`);
-            if (notes.trim()) {
-                card.classList.add('has-notes');
-            } else {
-                card.classList.remove('has-notes');
-            }
-
-            // Reset du bouton après 2 secondes
-            setTimeout(() => {
-                saveBtn.textContent = 'Enregistrer';
-                saveBtn.classList.remove('saved');
-                saveBtn.disabled = false;
-            }, 2000);
-
-        } else {
-            throw new Error(data.error || 'Erreur inconnue');
+        // Avec no-cors on ne peut pas lire la réponse
+        // On met à jour localement et on fait confiance
+        const review = allReviews.find(r => r.id === reviewId);
+        if (review) {
+            review.notesPraticienne = notes;
         }
+
+        // Feedback visuel
+        saveBtn.textContent = 'Enregistré !';
+        saveBtn.classList.add('saved');
+        textarea.dataset.original = notes;
+
+        // Mettre à jour les stats
+        updateStats();
+
+        // Mettre à jour le style de la carte
+        const card = document.querySelector(`.review-card-admin[data-id="${reviewId}"]`);
+        if (notes.trim()) {
+            card.classList.add('has-notes');
+        } else {
+            card.classList.remove('has-notes');
+        }
+
+        // Reset du bouton après 2 secondes
+        setTimeout(() => {
+            saveBtn.textContent = 'Enregistrer';
+            saveBtn.classList.remove('saved');
+            saveBtn.disabled = false;
+        }, 2000);
 
     } catch (error) {
         saveBtn.textContent = 'Erreur !';
