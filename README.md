@@ -142,9 +142,11 @@ La praticienne peut noter :
 
 ### Mise à jour du Google Sheet
 
-Ajouter la colonne G dans le Google Sheet :
+Ajouter les colonnes G, H, I dans le Google Sheet :
 ```
-A: Timestamp | B: Prénom | C: Massage | D: Date | E: Note | F: Commentaire | G: Notes Praticienne
+A: Timestamp | B: Prénom | C: Massage | D: Date | E: Note | F: Commentaire | G: Notes Praticienne | H: Tranche Age | I: Lien Clélia
 ```
+
+Les colonnes H et I (tranche d'âge et lien avec Clélia) sont collectées via le formulaire mais **visibles uniquement sur notes.html** (pas sur le livre d'or public).
 
 **Important :** Après modification du code Google Apps Script, créer un **nouveau déploiement** pour que les changements prennent effet.

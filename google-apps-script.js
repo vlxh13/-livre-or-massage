@@ -4,7 +4,7 @@
 //
 // INSTRUCTIONS :
 // 1. Créer un Google Sheet avec les colonnes :
-//    A: Timestamp | B: Prénom | C: Massage | D: Date | E: Note | F: Commentaire | G: Notes Praticienne
+//    A: Timestamp | B: Prénom | C: Massage | D: Date | E: Note | F: Commentaire | G: Notes Praticienne | H: Tranche Age | I: Lien Clélia
 //
 // 2. Dans le Google Sheet, aller dans Extensions > Apps Script
 //
@@ -54,9 +54,11 @@ function doGet(e) {
           commentaire: row[5]
         };
 
-        // Inclure les notes praticienne seulement en mode admin
+        // Inclure les notes praticienne et infos privées seulement en mode admin
         if (isAdmin) {
           review.notesPraticienne = row[6] || '';
+          review.trancheAge = row[7] || '';
+          review.lienClelia = row[8] || '';
         }
 
         reviews.push(review);
@@ -102,7 +104,7 @@ function doPost(e) {
       // Créer la feuille si elle n'existe pas
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       const newSheet = ss.insertSheet(SHEET_NAME);
-      newSheet.appendRow(['Timestamp', 'Prénom', 'Massage', 'Date', 'Note', 'Commentaire', 'Notes Praticienne']);
+      newSheet.appendRow(['Timestamp', 'Prénom', 'Massage', 'Date', 'Note', 'Commentaire', 'Notes Praticienne', 'Tranche Age', 'Lien Clélia']);
       sheet = newSheet;
     }
 
@@ -130,7 +132,9 @@ function doPost(e) {
       data.date || '',
       data.note || 5,
       data.commentaire || '',
-      '' // Notes praticienne vide au départ
+      '', // Notes praticienne vide au départ
+      data.trancheAge || '',
+      data.lienClelia || ''
     ]);
 
     return createJsonResponse({ success: true, message: 'Avis enregistré' });

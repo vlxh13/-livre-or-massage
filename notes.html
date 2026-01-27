@@ -199,6 +199,93 @@
             background: var(--bg-secondary);
             color: var(--text-primary);
         }
+
+        .print-btn {
+            padding: 10px 20px;
+            background: var(--accent-dark);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .print-btn:hover {
+            background: var(--accent);
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .client-meta {
+            display: inline-flex;
+            gap: 8px;
+            margin-left: 12px;
+            font-size: 0.8rem;
+        }
+
+        .meta-tag {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        /* Styles impression */
+        @media print {
+            body {
+                background: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            .admin-badge,
+            .filter-notes,
+            .header-actions,
+            .notes-section,
+            .save-btn,
+            .edit-btn,
+            .cancel-btn,
+            footer {
+                display: none !important;
+            }
+
+            .review-card-admin {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 16px;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .client-review {
+                border-bottom: none;
+                padding-bottom: 8px;
+                margin-bottom: 0;
+            }
+
+            .stats-bar {
+                margin-bottom: 16px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -227,6 +314,12 @@
             <button class="filter-btn active" data-filter="all">Tous</button>
             <button class="filter-btn" data-filter="without-notes">Sans notes</button>
             <button class="filter-btn" data-filter="with-notes">Avec notes</button>
+        </div>
+
+        <div class="header-actions">
+            <button class="print-btn" onclick="window.print()">
+                🖨️ Imprimer
+            </button>
         </div>
 
         <main id="reviews-container">

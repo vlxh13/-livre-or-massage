@@ -76,6 +76,8 @@ function setupForm() {
             date: form.date.value,
             note: parseInt(form.note.value),
             commentaire: form.commentaire.value.trim(),
+            trancheAge: form.trancheAge.value,
+            lienClelia: form.lienClelia.value,
             timestamp: new Date().toISOString()
         };
 

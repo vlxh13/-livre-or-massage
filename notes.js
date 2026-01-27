@@ -92,12 +92,22 @@ function createReviewCard(review) {
     const stars = '★'.repeat(review.note) + '☆'.repeat(5 - review.note);
     const formattedDate = formatDate(review.date);
 
+    // Tags pour tranche d'âge et lien
+    const metaTags = [];
+    if (review.trancheAge) {
+        metaTags.push(`<span class="meta-tag">${escapeHtml(review.trancheAge)}</span>`);
+    }
+    if (review.lienClelia) {
+        metaTags.push(`<span class="meta-tag">${escapeHtml(review.lienClelia)}</span>`);
+    }
+    const metaHtml = metaTags.length > 0 ? `<span class="client-meta">${metaTags.join('')}</span>` : '';
+
     return `
         <div class="review-card-admin ${hasNotes ? 'has-notes' : ''}" data-id="${review.id}">
             <div class="client-review">
                 <div class="review-header">
                     <div class="review-info">
-                        <span class="review-name">${escapeHtml(review.prenom)}</span>
+                        <span class="review-name">${escapeHtml(review.prenom)}</span>${metaHtml}
                         <span class="review-massage">${escapeHtml(review.massage)}</span>
                         <span class="review-date">${formattedDate}</span>
                     </div>
