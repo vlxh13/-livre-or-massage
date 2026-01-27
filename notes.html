@@ -317,29 +317,28 @@
 
             h1 {
                 font-size: 14pt;
-                margin-bottom: 2mm;
+                margin-bottom: 1mm;
             }
 
-            /* Cacher "Mes Notes" si type massage sélectionné */
             #header-title {
-                display: none;
+                display: inline;
             }
 
             .subtitle {
                 font-size: 8pt;
-                margin-bottom: 2mm;
+                margin-bottom: 1mm;
             }
 
-            /* Afficher le type de massage en grand */
+            /* Type de massage sous le subtitle */
             .print-massage-type {
                 display: block !important;
                 font-family: 'Cormorant Garamond', serif;
-                font-size: 18pt;
-                font-weight: 500;
+                font-size: 12pt;
+                font-weight: 600;
                 color: var(--accent-dark);
                 text-transform: uppercase;
-                letter-spacing: 2px;
-                margin-top: 2mm;
+                letter-spacing: 1px;
+                margin-top: 1mm;
             }
 
             .print-massage-type:empty {
@@ -365,7 +364,7 @@
             .review-card-admin {
                 display: flex !important;
                 flex-direction: row !important;
-                align-items: stretch;
+                align-items: flex-start;
                 gap: 2mm;
                 padding: 0;
                 border: none;
@@ -383,7 +382,7 @@
 
             /* Bulle gauche : avis client */
             .client-review {
-                flex: 1 1 auto;
+                flex: 0 1 auto;
                 background: white;
                 border: 1.5px solid #999;
                 border-radius: 8px;
@@ -422,14 +421,21 @@
             }
 
             .client-meta {
-                display: none;
+                display: inline-flex !important;
+                gap: 3px;
+                margin-left: 0;
+                margin-top: 1mm;
+            }
+
+            .meta-tag {
+                font-size: 6pt;
+                padding: 1px 4px;
+                background: #eee !important;
             }
 
             /* Bulle droite : notes praticienne */
             .notes-section {
-                flex: 0 0 auto;
-                min-width: 25%;
-                max-width: 45%;
+                flex: 0 1 auto;
                 padding: 2.5mm;
                 background: #f0f4ec !important;
                 border: 1.5px solid var(--accent) !important;
@@ -437,8 +443,7 @@
             }
 
             .notes-section.notes-saved {
-                display: flex !important;
-                flex-direction: column;
+                display: block !important;
                 margin-top: 0;
             }
 
