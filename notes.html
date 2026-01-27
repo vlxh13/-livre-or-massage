@@ -269,6 +269,11 @@
             border-color: var(--accent);
         }
 
+        /* Titre type massage (caché à l'écran, visible à l'impression) */
+        .print-massage-type {
+            display: none;
+        }
+
         /* Styles impression - Format vignettes paysage */
         @media print {
             @page {
@@ -305,16 +310,40 @@
             }
 
             header {
-                margin-bottom: 10mm;
-                padding-bottom: 5mm;
+                margin-bottom: 6mm;
+                padding-bottom: 3mm;
+                text-align: center;
             }
 
             h1 {
-                font-size: 16pt;
+                font-size: 14pt;
+                margin-bottom: 2mm;
+            }
+
+            /* Cacher "Mes Notes" si type massage sélectionné */
+            #header-title {
+                display: none;
             }
 
             .subtitle {
-                font-size: 9pt;
+                font-size: 8pt;
+                margin-bottom: 2mm;
+            }
+
+            /* Afficher le type de massage en grand */
+            .print-massage-type {
+                display: block !important;
+                font-family: 'Cormorant Garamond', serif;
+                font-size: 18pt;
+                font-weight: 500;
+                color: var(--accent-dark);
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                margin-top: 2mm;
+            }
+
+            .print-massage-type:empty {
+                display: none !important;
             }
 
             /* Grille de vignettes */
@@ -324,10 +353,19 @@
                 gap: 6mm;
             }
 
-            /* Vignette = conteneur avec titre + bulles */
+            /* Grille serrée pour plus d'avis */
+            #reviews-container {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 4mm;
+                justify-content: center;
+            }
+
+            /* Vignette = deux bulles côte à côte */
             .review-card-admin {
                 display: flex !important;
-                flex-direction: column !important;
+                flex-direction: row !important;
+                align-items: stretch;
                 gap: 2mm;
                 padding: 0;
                 border: none;
@@ -338,44 +376,30 @@
                 background: transparent;
             }
 
-            /* Titre du massage en haut */
+            /* Pas de titre massage sur chaque vignette */
             .review-card-admin::before {
-                content: attr(data-massage-type);
-                display: block;
-                font-size: 8pt;
-                font-weight: 700;
-                color: var(--accent-dark);
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                padding-bottom: 1mm;
-                border-bottom: 1px solid var(--accent-light);
-                margin-bottom: 1mm;
+                display: none !important;
             }
 
-            /* Conteneur des deux bulles côte à côte */
+            /* Bulle gauche : avis client */
             .client-review {
-                display: inline-block;
-                vertical-align: top;
-                width: auto;
-                max-width: 65%;
+                flex: 1 1 auto;
                 background: white;
-                border: 2px solid #bbb;
-                border-radius: 10px;
-                padding: 3mm;
-                margin-right: 2mm;
+                border: 1.5px solid #999;
+                border-radius: 8px;
+                padding: 2.5mm;
                 margin-bottom: 0;
             }
 
             .review-header {
-                margin-bottom: 2mm;
+                margin-bottom: 1.5mm;
             }
 
             .review-name {
-                font-size: 9pt;
+                font-size: 8pt;
                 font-weight: 600;
             }
 
-            /* Cacher le type de massage dans la bulle (déjà en titre) */
             .review-massage {
                 display: none !important;
             }
@@ -385,12 +409,12 @@
             }
 
             .review-stars {
-                font-size: 8pt;
+                font-size: 7pt;
             }
 
             .review-text {
-                font-size: 8pt;
-                line-height: 1.35;
+                font-size: 7.5pt;
+                line-height: 1.3;
             }
 
             .review-text::before {
@@ -403,32 +427,42 @@
 
             /* Bulle droite : notes praticienne */
             .notes-section {
-                display: inline-block !important;
-                vertical-align: top;
-                width: auto;
-                max-width: 50%;
-                padding: 3mm;
+                flex: 0 0 auto;
+                min-width: 25%;
+                max-width: 45%;
+                padding: 2.5mm;
                 background: #f0f4ec !important;
-                border: 2px solid var(--accent) !important;
-                border-radius: 10px;
+                border: 1.5px solid var(--accent) !important;
+                border-radius: 8px;
             }
 
             .notes-section.notes-saved {
+                display: flex !important;
+                flex-direction: column;
                 margin-top: 0;
             }
 
-            /* Pas de titre dans la bulle notes */
+            /* Label "Notes perso" */
             .notes-section label {
                 display: none !important;
             }
 
             .notes-section::before {
-                display: none !important;
+                content: "Notes perso";
+                display: block;
+                font-size: 6pt;
+                font-weight: 600;
+                color: var(--accent-dark);
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                margin-bottom: 1mm;
+                padding-bottom: 1mm;
+                border-bottom: 1px solid var(--accent-light);
             }
 
             .notes-display {
-                font-size: 8pt;
-                line-height: 1.35;
+                font-size: 7.5pt;
+                line-height: 1.3;
                 padding: 0 !important;
                 background: transparent !important;
             }
@@ -438,8 +472,9 @@
 <body>
     <div class="container">
         <header>
-            <h1>Mes Notes <span class="admin-badge">Praticienne</span></h1>
+            <h1><span id="header-title">Mes Notes</span> <span class="admin-badge">Praticienne</span></h1>
             <p class="subtitle">Suivi personnel de mes massages</p>
+            <p class="print-massage-type" id="print-massage-type"></p>
         </header>
 
         <div class="stats-bar" id="stats-bar">

@@ -67,8 +67,23 @@ function setupMassageFilter() {
 
     select.addEventListener('change', () => {
         currentMassageFilter = select.value;
+        updatePrintTitle();
         renderReviews();
     });
+}
+
+// Mettre à jour le titre pour l'impression
+function updatePrintTitle() {
+    const titleEl = document.getElementById('print-massage-type');
+    const headerTitle = document.getElementById('header-title');
+
+    if (currentMassageFilter === 'all') {
+        titleEl.textContent = '';
+        headerTitle.textContent = 'Mes Notes';
+    } else {
+        titleEl.textContent = currentMassageFilter;
+        headerTitle.textContent = currentMassageFilter;
+    }
 }
 
 // Remplir le select avec les types de massage trouvés
