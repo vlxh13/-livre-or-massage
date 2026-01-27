@@ -321,35 +321,39 @@
             #reviews-container {
                 display: grid !important;
                 grid-template-columns: repeat(2, 1fr);
-                gap: 8mm;
+                gap: 6mm;
             }
 
-            /* Vignette */
+            /* Vignette = conteneur des deux bulles */
             .review-card-admin {
                 display: flex !important;
                 flex-direction: row !important;
-                gap: 4mm;
-                padding: 4mm;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                border-left: 3px solid var(--accent);
+                align-items: flex-start;
+                gap: 3mm;
+                padding: 0;
+                border: none;
+                border-left: none;
                 box-shadow: none;
                 page-break-inside: avoid;
                 break-inside: avoid;
                 margin-bottom: 0;
+                background: transparent;
             }
 
             .review-card-admin.has-notes {
-                border-left-color: var(--gold);
+                border-left-color: transparent;
             }
 
-            /* Colonne gauche : avis client */
+            /* Bulle gauche : avis client */
             .client-review {
-                flex: 1;
+                flex: 1 1 auto;
+                min-width: 30%;
+                max-width: 75%;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 3mm;
                 border-bottom: none;
-                border-right: 1px solid #eee;
-                padding-right: 3mm;
-                padding-bottom: 0;
                 margin-bottom: 0;
             }
 
@@ -358,47 +362,53 @@
             }
 
             .review-name {
-                font-size: 10pt;
+                font-size: 9pt;
                 font-weight: 600;
             }
 
             .review-massage {
-                font-size: 8pt;
-            }
-
-            .review-date {
                 font-size: 7pt;
             }
 
+            .review-date {
+                font-size: 6pt;
+            }
+
             .review-stars {
-                font-size: 9pt;
+                font-size: 8pt;
             }
 
             .review-text {
                 font-size: 8pt;
-                line-height: 1.4;
+                line-height: 1.35;
+            }
+
+            .review-text::before {
+                display: none;
             }
 
             .client-meta {
                 display: none;
             }
 
-            /* Colonne droite : notes praticienne */
+            /* Bulle droite : notes praticienne */
             .notes-section {
-                flex: 1;
-                padding: 2mm;
-                background: #f9f9f9 !important;
-                border-radius: 3px;
+                flex: 1 1 auto;
+                min-width: 20%;
+                max-width: 65%;
+                padding: 3mm;
+                background: #f0f4ec !important;
+                border: 1px solid var(--accent-light);
+                border-radius: 8px;
             }
 
             .notes-section.notes-saved {
                 display: flex !important;
                 flex-direction: column;
-                border: none !important;
                 margin-top: 0;
             }
 
-            /* Label avec catégorie massage au lieu de "Mes notes" */
+            /* Label = catégorie massage */
             .notes-section label {
                 display: none !important;
             }
@@ -406,17 +416,17 @@
             .notes-section::before {
                 content: attr(data-massage-type);
                 display: block;
-                font-size: 8pt;
+                font-size: 7pt;
                 font-weight: 600;
                 color: var(--accent-dark);
-                margin-bottom: 2mm;
+                margin-bottom: 1.5mm;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
+                letter-spacing: 0.3px;
             }
 
             .notes-display {
                 font-size: 8pt;
-                line-height: 1.4;
+                line-height: 1.35;
                 padding: 0 !important;
                 background: transparent !important;
             }
