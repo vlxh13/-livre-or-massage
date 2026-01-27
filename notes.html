@@ -240,12 +240,47 @@
             font-size: 0.75rem;
         }
 
-        /* Styles impression */
+        .filter-massage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .filter-massage label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .filter-massage select {
+            padding: 8px 16px;
+            border: 1px solid var(--accent-light);
+            border-radius: 8px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 0.9rem;
+            background: var(--white);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .filter-massage select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Styles impression - Format vignettes paysage */
         @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+
             body {
                 background: white !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                font-size: 9pt;
             }
 
             .container {
@@ -253,8 +288,10 @@
                 padding: 0;
             }
 
+            /* Masquer les éléments interactifs */
             .admin-badge,
             .filter-notes,
+            .filter-massage,
             .header-actions,
             .notes-textarea,
             .notes-editing,
@@ -262,41 +299,139 @@
             .edit-btn,
             .cancel-btn,
             .notes-actions,
+            .stats-bar,
             footer {
                 display: none !important;
             }
 
-            .notes-section.notes-saved {
-                display: block !important;
-                background: #f5f5f5 !important;
-                border: 1px solid #ddd !important;
-                margin-top: 12px;
-            }
-
-            .notes-display {
-                background: white !important;
-            }
-
-            .review-card-admin {
-                break-inside: avoid;
-                page-break-inside: avoid;
-                margin-bottom: 16px;
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-
-            .client-review {
-                border-bottom: none;
-                padding-bottom: 8px;
-                margin-bottom: 0;
-            }
-
-            .stats-bar {
-                margin-bottom: 16px;
+            header {
+                margin-bottom: 10mm;
+                padding-bottom: 5mm;
             }
 
             h1 {
-                font-size: 1.5rem;
+                font-size: 16pt;
+            }
+
+            .subtitle {
+                font-size: 9pt;
+            }
+
+            /* Grille de vignettes */
+            #reviews-container {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8mm;
+            }
+
+            /* Vignette */
+            .review-card-admin {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 4mm;
+                padding: 4mm;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                border-left: 3px solid var(--accent);
+                box-shadow: none;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                margin-bottom: 0;
+                min-height: 35mm;
+                max-height: 50mm;
+                overflow: hidden;
+            }
+
+            .review-card-admin.has-notes {
+                border-left-color: var(--gold);
+            }
+
+            /* Colonne gauche : avis client */
+            .client-review {
+                flex: 1;
+                border-bottom: none;
+                border-right: 1px solid #eee;
+                padding-right: 3mm;
+                padding-bottom: 0;
+                margin-bottom: 0;
+                overflow: hidden;
+            }
+
+            .review-header {
+                margin-bottom: 2mm;
+            }
+
+            .review-name {
+                font-size: 10pt;
+                font-weight: 600;
+            }
+
+            .review-massage {
+                font-size: 8pt;
+            }
+
+            .review-date {
+                font-size: 7pt;
+            }
+
+            .review-stars {
+                font-size: 9pt;
+            }
+
+            .review-text {
+                font-size: 8pt;
+                line-height: 1.4;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 4;
+                -webkit-box-orient: vertical;
+            }
+
+            .client-meta {
+                display: none;
+            }
+
+            /* Colonne droite : notes praticienne */
+            .notes-section {
+                flex: 1;
+                padding: 2mm;
+                background: #f9f9f9 !important;
+                border-radius: 3px;
+                overflow: hidden;
+            }
+
+            .notes-section.notes-saved {
+                display: flex !important;
+                flex-direction: column;
+                border: none !important;
+                margin-top: 0;
+            }
+
+            /* Label avec catégorie massage au lieu de "Mes notes" */
+            .notes-section label {
+                display: none !important;
+            }
+
+            .notes-section::before {
+                content: attr(data-massage-type);
+                display: block;
+                font-size: 8pt;
+                font-weight: 600;
+                color: var(--accent-dark);
+                margin-bottom: 2mm;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .notes-display {
+                font-size: 8pt;
+                line-height: 1.4;
+                padding: 0 !important;
+                background: transparent !important;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 5;
+                -webkit-box-orient: vertical;
             }
         }
     </style>
@@ -327,6 +462,13 @@
             <button class="filter-btn active" data-filter="all">Tous</button>
             <button class="filter-btn" data-filter="without-notes">Sans notes</button>
             <button class="filter-btn" data-filter="with-notes">Avec notes</button>
+        </div>
+
+        <div class="filter-massage">
+            <label>Filtrer par massage :</label>
+            <select id="massage-filter">
+                <option value="all">Tous les massages</option>
+            </select>
         </div>
 
         <div class="header-actions">

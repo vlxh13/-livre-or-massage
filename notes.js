@@ -4,11 +4,13 @@
 
 let allReviews = [];
 let currentFilter = 'all';
+let currentMassageFilter = 'all';
 
 // Charger les avis au démarrage
 document.addEventListener('DOMContentLoaded', () => {
     loadReviews();
     setupFilters();
+    setupMassageFilter();
 });
 
 // Récupérer les avis avec les notes praticienne (mode admin)
@@ -27,6 +29,7 @@ async function loadReviews() {
         allReviews.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         updateStats();
+        populateMassageFilter();
         renderReviews();
 
     } catch (error) {
@@ -45,7 +48,7 @@ function updateStats() {
     document.getElementById('stat-without-notes').textContent = withoutNotes;
 }
 
-// Configurer les filtres
+// Configurer les filtres (avec/sans notes)
 function setupFilters() {
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -57,16 +60,54 @@ function setupFilters() {
     });
 }
 
-// Filtrer les avis selon le filtre actif
+// Configurer le filtre par type de massage
+function setupMassageFilter() {
+    const select = document.getElementById('massage-filter');
+    if (!select) return;
+
+    select.addEventListener('change', () => {
+        currentMassageFilter = select.value;
+        renderReviews();
+    });
+}
+
+// Remplir le select avec les types de massage trouvés
+function populateMassageFilter() {
+    const select = document.getElementById('massage-filter');
+    if (!select) return;
+
+    // Récupérer les types uniques depuis les avis
+    const types = [...new Set(allReviews.map(r => r.massage).filter(Boolean))].sort();
+
+    // Ajouter les options
+    types.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        select.appendChild(option);
+    });
+}
+
+// Filtrer les avis selon les filtres actifs (notes + massage)
 function getFilteredReviews() {
+    let filtered = allReviews;
+
+    // Filtre par notes
     switch (currentFilter) {
         case 'with-notes':
-            return allReviews.filter(r => r.notesPraticienne && r.notesPraticienne.trim());
+            filtered = filtered.filter(r => r.notesPraticienne && r.notesPraticienne.trim());
+            break;
         case 'without-notes':
-            return allReviews.filter(r => !r.notesPraticienne || !r.notesPraticienne.trim());
-        default:
-            return allReviews;
+            filtered = filtered.filter(r => !r.notesPraticienne || !r.notesPraticienne.trim());
+            break;
     }
+
+    // Filtre par type de massage
+    if (currentMassageFilter !== 'all') {
+        filtered = filtered.filter(r => r.massage === currentMassageFilter);
+    }
+
+    return filtered;
 }
 
 // Afficher les avis
@@ -124,7 +165,7 @@ function createReviewCard(review) {
 // Vue lecture : notes enregistrées
 function createSavedNotesView(review) {
     return `
-        <div class="notes-section notes-saved" id="notes-section-${review.id}">
+        <div class="notes-section notes-saved" id="notes-section-${review.id}" data-massage-type="${escapeHtml(review.massage || '')}">
             <label>Mes notes personnelles :</label>
             <div class="notes-display" id="notes-display-${review.id}">${escapeHtml(review.notesPraticienne).replace(/\n/g, '<br>')}</div>
             <button class="edit-btn" onclick="switchToEditMode(${review.id})">Modifier</button>
@@ -135,7 +176,7 @@ function createSavedNotesView(review) {
 // Vue édition : textarea
 function createEditNotesView(review) {
     return `
-        <div class="notes-section notes-editing" id="notes-section-${review.id}">
+        <div class="notes-section notes-editing" id="notes-section-${review.id}" data-massage-type="${escapeHtml(review.massage || '')}">
             <label for="notes-${review.id}">Mes notes personnelles :</label>
             <textarea
                 id="notes-${review.id}"
