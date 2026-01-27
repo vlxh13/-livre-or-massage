@@ -142,6 +142,63 @@
             color: var(--text-secondary);
             margin-top: 8px;
         }
+
+        /* Vue lecture des notes sauvées */
+        .notes-saved {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(201, 169, 89, 0.1) 100%);
+            border: 1px solid var(--gold);
+        }
+
+        .notes-display {
+            background: var(--white);
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            margin-bottom: 12px;
+        }
+
+        .edit-btn {
+            padding: 8px 16px;
+            background: transparent;
+            color: var(--accent-dark);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .notes-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .cancel-btn {
+            padding: 10px 20px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--text-secondary);
+            border-radius: 6px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
     </style>
 </head>
 <body>

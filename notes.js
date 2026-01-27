@@ -106,22 +106,62 @@ function createReviewCard(review) {
                 <p class="review-text">${escapeHtml(review.commentaire)}</p>
             </div>
 
-            <div class="notes-section">
-                <label for="notes-${review.id}">Mes notes personnelles :</label>
-                <textarea
-                    id="notes-${review.id}"
-                    class="notes-textarea"
-                    placeholder="Ce qui a bien marché, points à améliorer, tensions détectées..."
-                    data-id="${review.id}"
-                    data-original="${escapeHtml(review.notesPraticienne || '')}"
-                >${escapeHtml(review.notesPraticienne || '')}</textarea>
+            ${hasNotes ? createSavedNotesView(review) : createEditNotesView(review)}
+        </div>
+    `;
+}
+
+// Vue lecture : notes enregistrées
+function createSavedNotesView(review) {
+    return `
+        <div class="notes-section notes-saved" id="notes-section-${review.id}">
+            <label>Mes notes personnelles :</label>
+            <div class="notes-display" id="notes-display-${review.id}">${escapeHtml(review.notesPraticienne).replace(/\n/g, '<br>')}</div>
+            <button class="edit-btn" onclick="switchToEditMode(${review.id})">Modifier</button>
+        </div>
+    `;
+}
+
+// Vue édition : textarea
+function createEditNotesView(review) {
+    return `
+        <div class="notes-section notes-editing" id="notes-section-${review.id}">
+            <label for="notes-${review.id}">Mes notes personnelles :</label>
+            <textarea
+                id="notes-${review.id}"
+                class="notes-textarea"
+                placeholder="Ce qui a bien marché, points à améliorer, tensions détectées..."
+                data-id="${review.id}"
+            >${escapeHtml(review.notesPraticienne || '')}</textarea>
+            <div class="notes-actions">
                 <button class="save-btn" onclick="saveNotes(${review.id})" id="save-btn-${review.id}">
                     Enregistrer
                 </button>
-                ${hasNotes ? '<span class="timestamp-small">Notes enregistrées</span>' : '<span class="empty-notes">Pas encore de notes</span>'}
+                ${review.notesPraticienne ? '<button class="cancel-btn" onclick="cancelEdit(' + review.id + ')">Annuler</button>' : ''}
             </div>
         </div>
     `;
+}
+
+// Passer en mode édition
+function switchToEditMode(reviewId) {
+    const review = allReviews.find(r => r.id === reviewId);
+    if (!review) return;
+
+    const section = document.getElementById(`notes-section-${reviewId}`);
+    section.outerHTML = createEditNotesView(review);
+
+    // Focus sur le textarea
+    document.getElementById(`notes-${reviewId}`).focus();
+}
+
+// Annuler l'édition et revenir en mode lecture
+function cancelEdit(reviewId) {
+    const review = allReviews.find(r => r.id === reviewId);
+    if (!review || !review.notesPraticienne) return;
+
+    const section = document.getElementById(`notes-section-${reviewId}`);
+    section.outerHTML = createSavedNotesView(review);
 }
 
 // Sauvegarder les notes
@@ -153,11 +193,6 @@ async function saveNotes(reviewId) {
             review.notesPraticienne = notes;
         }
 
-        // Feedback visuel
-        saveBtn.textContent = 'Enregistré !';
-        saveBtn.classList.add('saved');
-        textarea.dataset.original = notes;
-
         // Mettre à jour les stats
         updateStats();
 
@@ -165,16 +200,15 @@ async function saveNotes(reviewId) {
         const card = document.querySelector(`.review-card-admin[data-id="${reviewId}"]`);
         if (notes.trim()) {
             card.classList.add('has-notes');
+            // Passer en mode lecture avec les notes affichées
+            const section = document.getElementById(`notes-section-${reviewId}`);
+            section.outerHTML = createSavedNotesView(review);
         } else {
             card.classList.remove('has-notes');
-        }
-
-        // Reset du bouton après 2 secondes
-        setTimeout(() => {
+            // Rester en mode édition si pas de notes
             saveBtn.textContent = 'Enregistrer';
-            saveBtn.classList.remove('saved');
             saveBtn.disabled = false;
-        }, 2000);
+        }
 
     } catch (error) {
         saveBtn.textContent = 'Erreur !';
