@@ -137,9 +137,6 @@ async function saveNotes(reviewId) {
     try {
         const response = await fetch(CONFIG.API_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
                 action: 'updateNotes',
                 id: reviewId,
