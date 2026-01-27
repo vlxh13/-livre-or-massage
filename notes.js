@@ -144,7 +144,7 @@ function createReviewCard(review) {
     const metaHtml = metaTags.length > 0 ? `<span class="client-meta">${metaTags.join('')}</span>` : '';
 
     return `
-        <div class="review-card-admin ${hasNotes ? 'has-notes' : ''}" data-id="${review.id}">
+        <div class="review-card-admin ${hasNotes ? 'has-notes' : ''}" data-id="${review.id}" data-massage-type="${escapeHtml(review.massage || '')}">
             <div class="client-review">
                 <div class="review-header">
                     <div class="review-info">

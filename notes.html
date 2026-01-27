@@ -324,15 +324,13 @@
                 gap: 6mm;
             }
 
-            /* Vignette = conteneur des deux bulles */
+            /* Vignette = conteneur avec titre + bulles */
             .review-card-admin {
                 display: flex !important;
-                flex-direction: row !important;
-                align-items: flex-start;
-                gap: 3mm;
+                flex-direction: column !important;
+                gap: 2mm;
                 padding: 0;
                 border: none;
-                border-left: none;
                 box-shadow: none;
                 page-break-inside: avoid;
                 break-inside: avoid;
@@ -340,20 +338,31 @@
                 background: transparent;
             }
 
-            .review-card-admin.has-notes {
-                border-left-color: transparent;
+            /* Titre du massage en haut */
+            .review-card-admin::before {
+                content: attr(data-massage-type);
+                display: block;
+                font-size: 8pt;
+                font-weight: 700;
+                color: var(--accent-dark);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding-bottom: 1mm;
+                border-bottom: 1px solid var(--accent-light);
+                margin-bottom: 1mm;
             }
 
-            /* Bulle gauche : avis client */
+            /* Conteneur des deux bulles côte à côte */
             .client-review {
-                flex: 1 1 auto;
-                min-width: 30%;
-                max-width: 75%;
+                display: inline-block;
+                vertical-align: top;
+                width: auto;
+                max-width: 65%;
                 background: white;
-                border: 1px solid #ddd;
-                border-radius: 8px;
+                border: 2px solid #bbb;
+                border-radius: 10px;
                 padding: 3mm;
-                border-bottom: none;
+                margin-right: 2mm;
                 margin-bottom: 0;
             }
 
@@ -366,8 +375,9 @@
                 font-weight: 600;
             }
 
+            /* Cacher le type de massage dans la bulle (déjà en titre) */
             .review-massage {
-                font-size: 7pt;
+                display: none !important;
             }
 
             .review-date {
@@ -393,35 +403,27 @@
 
             /* Bulle droite : notes praticienne */
             .notes-section {
-                flex: 1 1 auto;
-                min-width: 20%;
-                max-width: 65%;
+                display: inline-block !important;
+                vertical-align: top;
+                width: auto;
+                max-width: 50%;
                 padding: 3mm;
                 background: #f0f4ec !important;
-                border: 1px solid var(--accent-light);
-                border-radius: 8px;
+                border: 2px solid var(--accent) !important;
+                border-radius: 10px;
             }
 
             .notes-section.notes-saved {
-                display: flex !important;
-                flex-direction: column;
                 margin-top: 0;
             }
 
-            /* Label = catégorie massage */
+            /* Pas de titre dans la bulle notes */
             .notes-section label {
                 display: none !important;
             }
 
             .notes-section::before {
-                content: attr(data-massage-type);
-                display: block;
-                font-size: 7pt;
-                font-weight: 600;
-                color: var(--accent-dark);
-                margin-bottom: 1.5mm;
-                text-transform: uppercase;
-                letter-spacing: 0.3px;
+                display: none !important;
             }
 
             .notes-display {
