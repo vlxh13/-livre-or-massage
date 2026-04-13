@@ -37,10 +37,14 @@ async function loadReviews() {
     }
 }
 
-// Mettre à jour les statistiques
+// Mettre à jour les statistiques (respecte le filtre massage courant)
 function updateStats() {
-    const total = allReviews.length;
-    const withNotes = allReviews.filter(r => r.notesPraticienne && r.notesPraticienne.trim()).length;
+    const scope = currentMassageFilter === 'all'
+        ? allReviews
+        : allReviews.filter(r => r.massage === currentMassageFilter);
+
+    const total = scope.length;
+    const withNotes = scope.filter(r => r.notesPraticienne && r.notesPraticienne.trim()).length;
     const withoutNotes = total - withNotes;
 
     document.getElementById('stat-total').textContent = total;
@@ -68,6 +72,7 @@ function setupMassageFilter() {
     select.addEventListener('change', () => {
         currentMassageFilter = select.value;
         updatePrintTitle();
+        updateStats();
         renderReviews();
     });
 }
@@ -88,14 +93,22 @@ function populateMassageFilter() {
     const select = document.getElementById('massage-filter');
     if (!select) return;
 
-    // Récupérer les types uniques depuis les avis
-    const types = [...new Set(allReviews.map(r => r.massage).filter(Boolean))].sort();
+    // Compter les massages par type
+    const counts = {};
+    allReviews.forEach(r => {
+        if (!r.massage) return;
+        counts[r.massage] = (counts[r.massage] || 0) + 1;
+    });
 
-    // Ajouter les options
-    types.forEach(type => {
+    // MAJ l'option "Tous" avec le total
+    const allOption = select.querySelector('option[value="all"]');
+    if (allOption) allOption.textContent = `Tous les massages (${allReviews.length})`;
+
+    // Ajouter les options triées par nom
+    Object.keys(counts).sort().forEach(type => {
         const option = document.createElement('option');
         option.value = type;
-        option.textContent = type;
+        option.textContent = `${type} (${counts[type]})`;
         select.appendChild(option);
     });
 }
