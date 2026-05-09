@@ -6,6 +6,43 @@ let allReviews = [];
 let currentFilter = 'all';
 let currentMassageFilter = 'all';
 
+// === AUTH admin token ===
+// Stocké en localStorage. Le token est défini côté Apps Script
+// dans Project Settings > Script Properties > ADMIN_TOKEN.
+const TOKEN_KEY = 'admin_token';
+
+function getAdminToken() {
+    return localStorage.getItem(TOKEN_KEY) || '';
+}
+
+function setAdminToken(t) {
+    if (t) localStorage.setItem(TOKEN_KEY, t);
+    else localStorage.removeItem(TOKEN_KEY);
+}
+
+function promptForToken(reason) {
+    const msg = (reason ? reason + '\n\n' : '') +
+        'Saisis le token administrateur (defini dans les Script Properties de l Apps Script).';
+    const t = prompt(msg, '');
+    if (t && t.trim()) {
+        setAdminToken(t.trim());
+        return t.trim();
+    }
+    return '';
+}
+
+function ensureToken() {
+    let t = getAdminToken();
+    if (!t) t = promptForToken('Authentification admin requise.');
+    return t;
+}
+
+// Bouton "se déconnecter" (à appeler depuis HTML : onclick="adminLogout()")
+window.adminLogout = function() {
+    setAdminToken('');
+    location.reload();
+};
+
 // Charger les avis au démarrage
 document.addEventListener('DOMContentLoaded', () => {
     loadReviews();
@@ -15,12 +52,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Récupérer les avis avec les notes praticienne (mode admin)
 async function loadReviews() {
+    const token = ensureToken();
+    if (!token) {
+        showError('Aucun token admin saisi - acces aux notes refuse.');
+        return;
+    }
+
     try {
-        const response = await fetch(`${CONFIG.API_URL}?admin=true`);
+        const url = `${CONFIG.API_URL}?admin=true&token=${encodeURIComponent(token)}`;
+        const response = await fetch(url);
         const data = await response.json();
 
         if (data.error) {
             showError(data.error);
+            return;
+        }
+
+        // Token invalide ou ADMIN_TOKEN absent côté script
+        if (data.adminAuthRequired) {
+            setAdminToken('');
+            const t = promptForToken('Token admin invalide ou expire.');
+            if (t) return loadReviews();
+            showError('Token admin invalide - acces aux notes refuse.');
             return;
         }
 
@@ -246,6 +299,12 @@ async function saveNotes(reviewId) {
     const saveBtn = document.getElementById(`save-btn-${reviewId}`);
     const notes = textarea.value;
 
+    const token = ensureToken();
+    if (!token) {
+        saveBtn.textContent = 'Token requis';
+        return;
+    }
+
     // Désactiver le bouton pendant la sauvegarde
     saveBtn.disabled = true;
     saveBtn.textContent = 'Enregistrement...';
@@ -258,7 +317,8 @@ async function saveNotes(reviewId) {
             body: JSON.stringify({
                 action: 'updateNotes',
                 id: reviewId,
-                notesPraticienne: notes
+                notesPraticienne: notes,
+                adminToken: token
             })
         });
 

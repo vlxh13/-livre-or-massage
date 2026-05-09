@@ -117,12 +117,38 @@ livre-or-massage/
 
 ## Espace Praticienne (notes.html)
 
-Une page cachée permet à la praticienne de noter ses observations après chaque massage.
+Une page protégée par token permet à la praticienne de noter ses observations après chaque massage.
 
 ### Accès
 
-L'URL `notes.html` n'est pas liée publiquement. Seule la praticienne connaît le lien :
-- `https://tonsite.github.io/livre-or-massage/notes.html`
+L'URL `notes.html` n'est pas liée publiquement, et l'API exige un **token admin** pour renvoyer les notes praticienne / tranche d'âge / lien Clélia. Sans token valide, la page renvoie uniquement les avis publics.
+
+- URL : `https://tonsite.github.io/livre-or-massage/notes.html`
+- Au premier load, le navigateur demande le token (stocké ensuite dans `localStorage`).
+- Lien "Se déconnecter" dans le header pour effacer le token (utile si tu changes d'appareil).
+
+### ⚠️ Sécurité — Configurer le token admin (OBLIGATOIRE)
+
+Sans cette configuration, **personne ne peut voir les notes** (sécurité par défaut).
+
+1. Générer un token aléatoire long :
+   ```bash
+   # Linux/Mac
+   openssl rand -hex 24
+   # Ou n'importe quel password manager / random.org (32+ caractères)
+   ```
+2. Dans Google Apps Script : **icône engrenage (Project Settings)** > **Script Properties** > **Add script property**
+   - Property : `ADMIN_TOKEN`
+   - Value : *le token généré ci-dessus*
+3. Sauvegarder, puis **Déployer > Gérer les déploiements > éditer (crayon) > Nouvelle version > Déployer** pour activer les changements.
+4. Ouvrir `notes.html` dans le navigateur, le prompt demande le token : coller la même valeur.
+
+⚠️ Ne jamais commit le token. Le code public ne le contient JAMAIS — il est lu côté Google et stocké côté navigateur.
+
+### Si tu veux changer / révoquer le token
+1. Modifier la Script Property `ADMIN_TOKEN` dans Apps Script
+2. Re-déployer (nouvelle version)
+3. Tous les navigateurs avec l'ancien token seront déconnectés et re-prompt
 
 ### Fonctionnalités
 

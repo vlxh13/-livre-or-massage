@@ -10,25 +10,45 @@
 //
 // 3. Copier-coller tout ce code
 //
-// 4. Cliquer sur "Déployer" > "Nouveau déploiement"
+// 4. ⚠️ SÉCURITÉ — Définir un token admin :
+//    Project Settings (icône engrenage à gauche) > Script Properties > Add script property
+//      Property : ADMIN_TOKEN
+//      Value    : <token_random_long> (ex : openssl rand -hex 24, ou random.org)
+//    Sans cette propriété, les notes praticienne et infos clients privées
+//    restent inaccessibles, même avec ?admin=true.
+//
+// 5. Cliquer sur "Déployer" > "Nouveau déploiement"
 //    - Type: Application Web
 //    - Exécuter en tant que: Moi
 //    - Accès: Tout le monde
 //
-// 5. Copier l'URL du déploiement et la mettre dans config.js
+// 6. Copier l'URL du déploiement et la mettre dans config.js
+//
+// 7. Au premier accès à notes.html, le navigateur demandera le token
+//    (stocké ensuite dans le localStorage du navigateur).
 // ===========================================
 
 // Noms des feuilles (onglets)
 const SHEET_NAME = 'Avis';
 const CONFIG_SHEET_NAME = 'Config';
 
+// Vérifie le token admin contre la Script Property ADMIN_TOKEN.
+// Retourne true uniquement si la property est définie ET correspond au token fourni.
+function isValidAdminToken(token) {
+  if (!token) return false;
+  const expected = PropertiesService.getScriptProperties().getProperty('ADMIN_TOKEN');
+  if (!expected) return false; // Sécu par défaut : si pas configuré, jamais admin
+  return token === expected;
+}
+
 // GET - Récupérer les avis ET les types de massage
-// Paramètres: ?admin=true pour inclure les notes praticienne
+// Paramètres: ?admin=true&token=<ADMIN_TOKEN> pour inclure les notes praticienne
 function doGet(e) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName(SHEET_NAME);
-    const isAdmin = e && e.parameter && e.parameter.admin === 'true';
+    const requestedAdmin = e && e.parameter && e.parameter.admin === 'true';
+    const isAdmin = requestedAdmin && isValidAdminToken(e.parameter.token);
 
     // Récupérer les types de massage depuis l'onglet Config
     const massageTypes = getMassageTypes(ss);
@@ -54,7 +74,7 @@ function doGet(e) {
           commentaire: row[5]
         };
 
-        // Inclure les notes praticienne et infos privées seulement en mode admin
+        // Inclure les notes praticienne et infos privées seulement en mode admin authentifié
         if (isAdmin) {
           review.notesPraticienne = row[6] || '';
           review.trancheAge = row[7] || '';
@@ -65,7 +85,12 @@ function doGet(e) {
       }
     }
 
-    return createJsonResponse({ reviews: reviews, massageTypes: massageTypes });
+    // Si admin demandé sans token valide → flag pour que le frontend re-prompt
+    const response = { reviews: reviews, massageTypes: massageTypes };
+    if (requestedAdmin && !isAdmin) {
+      response.adminAuthRequired = true;
+    }
+    return createJsonResponse(response);
 
   } catch (error) {
     return createJsonResponse({ error: error.message, reviews: [], massageTypes: [] });
@@ -111,8 +136,11 @@ function doPost(e) {
     // Parser les données JSON
     const data = JSON.parse(e.postData.contents);
 
-    // ACTION: Mettre à jour les notes praticienne
+    // ACTION: Mettre à jour les notes praticienne — auth obligatoire
     if (data.action === 'updateNotes') {
+      if (!isValidAdminToken(data.adminToken)) {
+        return createJsonResponse({ success: false, error: 'Token admin invalide ou absent' });
+      }
       const rowId = parseInt(data.id);
       if (!rowId || rowId < 2) {
         return createJsonResponse({ success: false, error: 'ID invalide' });
@@ -124,7 +152,7 @@ function doPost(e) {
       return createJsonResponse({ success: true, message: 'Notes mises à jour' });
     }
 
-    // ACTION PAR DÉFAUT: Ajouter un nouvel avis
+    // ACTION PAR DÉFAUT: Ajouter un nouvel avis (publique, pas d'auth requise)
     sheet.appendRow([
       new Date().toISOString(),
       data.prenom || '',
